@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id               String    @id @default(cuid())
+  category         String
+  articleUrl       String    @unique
+  articleTitle     String
+  articleSnippet   String
+  sourceDomain     String
+  scrapedImageUrl  String?
+  fallbackImageUrl String?
+  headlineLine1    String
+  highlightedWord  String
+  headlineLine2    String
+  subcategory      String
+  summary          String
+  hashtags         String
+  cardImageUrl     String?
+  fbPostId         String?
+  igPostId         String?
+  status           String    @default("PENDING")
+  publishedAt      DateTime?
+  createdAt        DateTime  @default(now())
+  errorMessage     String?
+}
+
+model DailyQuota {
+  id       Int      @id @default(autoincrement())
+  date     DateTime
+  category String
+  count    Int      @default(0)
+
+  @@unique([date, category])
+}
+
+model ErrorLog {
+  id        Int      @id @default(autoincrement())
+  step      String
+  message   String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model WorkflowRun {
+  id          Int      @id @default(autoincrement())
+  triggeredBy String   @default("cron")
+  startedAt   DateTime @default(now())
+  finishedAt  DateTime?
+  status      String   @default("RUNNING")
+  processed   Int      @default(0)
+  published   Int      @default(0)
+  failed      Int      @default(0)
+  summary     String?
+}
